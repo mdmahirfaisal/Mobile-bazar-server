@@ -28,8 +28,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        console.log('super car database connected successfully');
-        const database = client.db("super_car_shop");
+        console.log('mobile bazar database connected successfully');
+        const database = client.db("mobile_bazar");
         const productsCollection = database.collection("products");
         const ordersCollection = database.collection("orders");
         const reviewCollection = database.collection("review");
@@ -48,6 +48,7 @@ async function run() {
             const email = req.query.email;
             console.log(email);
             const query = { email: email, };
+            console.log(object);
             const cursor = ordersCollection.find(query);
             const result = await cursor.toArray();
             res.json(result)
@@ -170,14 +171,14 @@ async function run() {
         });
 
         // PUT API users admin
-        // app.put('/users/admin', async (req, res) => {
-        //     const user = req.body;
-        //     const filter = { email: user.email };
-        //     const updateDoc = { $set: { role: 'admin' } };
-        //     const result = await usersCollection.updateOne(filter, updateDoc);
-        //     console.log(result, 'admin created successfully');
-        //     res.json(result);
-        // })
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const updateDoc = { $set: { role: 'admin' } };
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            console.log(result, 'admin created successfully');
+            res.json(result);
+        })
 
         // PUT API status update 
         app.put('/updateOrderStatus', (req, res) => {
