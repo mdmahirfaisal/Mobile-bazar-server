@@ -2,7 +2,6 @@ const express = require('express')
 const { MongoClient } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
 
-// const admin = require("firebase-admin");
 
 const app = express()
 const cors = require('cors');
