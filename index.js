@@ -99,22 +99,23 @@ async function run() {
         // POST API  products send to database
         app.post('/products', async (req, res) => {
             const products = req.body;
-            console.log(products);
             const result = await productsCollection.insertOne(products);
             res.json(result);
         });
 
         // PUT API product update 
 
-        app.put('/updateProduct', (req, res) => {
-            const data = req.body;
-            console.log(req.body);
-            productsCollection.findOneAndUpdate(
-                { _id: ObjectId(id) },
-                {
-                    $set: data,
-                }
-            ).then(result => res.send(result.lastErrorObject.updatedExisting))
+        app.put('/updateProduct', async (req, res) => {
+            const { id, name, img, description, price } = req.body;
+            console.log("Edit Product: ", req.body);
+            const query = { _id: ObjectId(id) };
+            // const options = { upsert: true };
+            const updateDoc = {
+                $set: name, price, description, img,
+            }
+            const result = await productsCollection.updateOne(query, updateDoc);
+            res.json(result);
+
         })
 
 
@@ -187,7 +188,7 @@ async function run() {
                 {
                     $set: { status },
                 }
-            ).then(result => res.send(result.lastErrorObject.updatedExisting))
+            ).then(result => res.json(result.lastErrorObject.updatedExisting))
         })
 
     } finally {
