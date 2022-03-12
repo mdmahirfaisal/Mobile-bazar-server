@@ -107,12 +107,12 @@ async function run() {
         // PUT API product update 
 
         app.put('/updateProduct', (req, res) => {
-            const { id, name, price, description, img } = req.body;
+            const data = req.body;
             console.log(req.body);
             productsCollection.findOneAndUpdate(
                 { _id: ObjectId(id) },
                 {
-                    $set: { name, price, description, img },
+                    $set: data,
                 }
             ).then(result => res.send(result.lastErrorObject.updatedExisting))
         })
