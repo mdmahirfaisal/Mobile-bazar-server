@@ -1,14 +1,14 @@
 const express = require('express')
-// const helmet = require("helmet");
+const helmet = require("helmet");
 const { MongoClient } = require("mongodb");
 const ObjectId = require("mongodb").ObjectId;
 
 const app = express();
-// app.use(helmet());
-const cors = require('cors');
-require('dotenv').config();
+app.use(helmet());
+const cors = require("cors");
+require("dotenv").config();
 
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5000;
 // Configure specific directives (for CSP, etc.)
 // app.use(
 //   helmet({
@@ -27,7 +27,7 @@ const port = process.env.PORT || 5000
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' https://vercel.live; img-src 'self' data:; object-src 'none'"
+    "default-src 'self'; script-src-elem 'self' https://vercel.live; img-src 'self' data:; object-src 'none'"
   );
   next();
 });
