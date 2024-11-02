@@ -9,13 +9,17 @@ const cors = require("cors");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 // Configure specific directives (for CSP, etc.)
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      contentSecurityPolicy: false,
-    },
-  })
-);
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       contentSecurityPolicy: false,
+//     },
+//   })
+// );
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://vercel.live; img-src 'self' data:;");
+  next();
+});
 
 // middle ware Z
 app.use(cors());
