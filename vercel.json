@@ -11,5 +11,11 @@
       "src": "/(.*)",
       "dest": "index.js"
     }
+  ],
+  "rewrites": [
+    { "source": "/products", "destination": "/products" },
+    { "source": "/review", "destination": "/review" },
+    { "source": "/orders", "destination": "/orders" },
+    { "source": "/users", "destination": "/users" }
   ]
 }
