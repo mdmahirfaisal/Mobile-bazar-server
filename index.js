@@ -15,9 +15,12 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://vercel.live"]
-      }
-    }
+        scriptSrc: ["'self'", "https://vercel.live"],
+        scriptSrcElem: ["'self'", "https://vercel.live"],
+        objectSrc: ["'none'"],
+        connectSrc: ["'self'", "https://vercel.live"],
+      },
+    },
   })
 );
 
