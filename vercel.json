@@ -13,9 +13,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/products", "destination": "/products" },
-    { "source": "/review", "destination": "/review" },
-    { "source": "/orders", "destination": "/orders" },
-    { "source": "/users", "destination": "/users" }
+    { "source": "/products", "destination": "/api/products" },
+    { "source": "/review", "destination": "/api/review" },
+    { "source": "/orders", "destination": "/api/orders" },
+    { "source": "/users", "destination": "/api/users" }
   ]
 }
