@@ -27,7 +27,7 @@ const port = process.env.PORT || 5000;
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src-elem 'self' https://vercel.live; img-src 'self' data:; style-src 'self' 'unsafe-inline'; object-src 'none'"
+    "default-src 'self'; script-src-elem 'self' https://vercel.live; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-src https://vercel.live; object-src 'none'"
   );
   next();
 });
