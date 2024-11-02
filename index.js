@@ -33,14 +33,6 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "script-src-elem 'self' https://mobile-bazar.vercel.app https://smart-mobile-bazar.web.app http://localhost:3000; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-src https://mobile-bazar.vercel.app https://smart-mobile-bazar.web.app http://localhost:3000; object-src 'none'"
-  );
-  next();
-});
-
 // middle ware Z
 app.use(cors());
 app.use(express.json());
