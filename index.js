@@ -10,21 +10,17 @@ require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 // Configure specific directives (for CSP, etc.)
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         scriptSrc: ["'self'", "https://vercel.live"],
-//         // Add more sources if needed
-//       },
-//     },
-//   })
-// );
 app.use(
   helmet({
-    contentSecurityPolicy: false,
-    xDownloadOptions: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://vercel.live"],
+        scriptSrcElem: ["'self'", "https://vercel.live"],
+        objectSrc: ["'none'"],
+        connectSrc: ["'self'", "https://vercel.live"],
+      },
+    },
   })
 );
 
@@ -92,16 +88,7 @@ async function run() {
       const cursor = productsCollection.find({});
       const products = await cursor.toArray();
       console.log("products: ", products);
-      // res.send(products);
-      res.json([
-        {
-          userId: 1,
-          id: 1,
-          title:
-            "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-          body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
-        },
-      ]);
+      res.send(products);
     });
 
     // GET single Product API
