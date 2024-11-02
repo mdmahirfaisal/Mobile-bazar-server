@@ -13,19 +13,22 @@ const port = process.env.PORT || 5000;
 app.use(
   helmet({
     contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://vercel.live"],
-        scriptSrcElem: ["'self'", "https://vercel.live"],
-        objectSrc: ["'none'"],
-        connectSrc: [
-          "'self'",
-          "https://vercel.live",
-          "http://localhost:3000",
-          "http://localhost:3001",
-          "https://smart-mobile-bazar.web.app",
-        ], // add client app's origin in development
-      },
+      useDefaults: false,
+      contentSecurityPolicy: false,
+      xDownloadOptions: false,
+      // directives: {
+      //   defaultSrc: ["'self'"],
+      //   scriptSrc: ["'self'", "https://vercel.live"],
+      //   scriptSrcElem: ["'self'", "https://vercel.live"],
+      //   objectSrc: ["'none'"],
+      //   connectSrc: [
+      //     "'self'",
+      //     // "https://vercel.live",
+      //     "http://localhost:3000",
+      //     // "http://localhost:3001",
+      //     // "https://smart-mobile-bazar.web.app",
+      //   ], // add client app's origin in development
+      // },
     },
   })
 );
