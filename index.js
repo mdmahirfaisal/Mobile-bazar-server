@@ -21,7 +21,7 @@ app.use(
 app.use(cors());
 app.use(express.json());
 
-console.log("helmet: ", helmet);
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dt2b3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const client = new MongoClient(uri);
@@ -67,6 +67,25 @@ async function run() {
       res.send(result);
     });
 
+    // GET API Load all products
+    app.get("/product", async (req, res) => {
+      res.send([
+        {
+          userId: 1,
+          id: 1,
+          title:
+            "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+          body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
+        },
+        {
+          userId: 2,
+          id: 1,
+          title:
+            "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+          body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
+        },
+      ]);
+    });
     // GET API Load all products
     app.get("/products", async (req, res) => {
       const cursor = productsCollection.find({});
@@ -190,6 +209,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
+  console.log("helmet: ", helmet);
   res.send([
     {
       userId: 1,
