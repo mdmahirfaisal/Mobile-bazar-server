@@ -1,14 +1,25 @@
 const express = require('express')
-const { MongoClient } = require('mongodb');
-const ObjectId = require('mongodb').ObjectId;
+const helmet = require("helmet");
+const { MongoClient } = require("mongodb");
+const ObjectId = require("mongodb").ObjectId;
 
-
-const app = express()
+const app = express();
+app.use(helmet());
 const cors = require('cors');
 require('dotenv').config();
 
 const port = process.env.PORT || 5000
-
+// Configure specific directives (for CSP, etc.)
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://vercel.live"]
+      }
+    }
+  })
+);
 
 
 // middle ware 
