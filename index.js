@@ -201,13 +201,6 @@ app.get("/", (req, res) => {
   ]);
 });
 
-// GET API Load all products
-app.get("/products", async (req, res) => {
-  const cursor = productsCollection.find({});
-  const products = await cursor.toArray();
-  res.send(products);
-});
-
 app.listen(port, () => {
   console.log(` listening ${port}`);
 });
