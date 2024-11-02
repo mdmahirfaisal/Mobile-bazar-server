@@ -65,14 +65,14 @@ async function run() {
       const query = { email: email };
       const cursor = ordersCollection.find(query);
       const result = await cursor.toArray();
-      res.json(result);
+      res.send(result);
     });
 
     // POST API  orders send to database
     app.post("/orders", async (req, res) => {
       const orders = req.body;
       const result = await ordersCollection.insertOne(orders);
-      res.json(result);
+      res.send(result);
     });
 
     // DELETE Order  with user
@@ -111,7 +111,7 @@ async function run() {
     app.post("/products", async (req, res) => {
       const products = req.body;
       const result = await productsCollection.insertOne(products);
-      res.json(result);
+      res.send(result);
     });
 
     // PUT API product update
