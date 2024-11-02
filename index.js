@@ -16,15 +16,18 @@ const port = process.env.PORT || 5000;
 //     },
 //   })
 // );
-app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://vercel.live; img-src 'self' data:;");
-  next();
-});
 
 // middle ware Z
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' https://vercel.live; img-src 'self' data:;"
+  );
+  next();
+});
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dt2b3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
