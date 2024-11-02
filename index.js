@@ -89,7 +89,7 @@ async function run() {
       const products = await cursor.toArray();
       console.log("products: ", products);
       // res.send(products);
-      res.send([
+      res.json([
         {
           userId: 1,
           id: 1,
