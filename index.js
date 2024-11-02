@@ -76,25 +76,6 @@ async function run() {
     });
 
     // GET API Load all products
-    app.get("/product", async (req, res) => {
-      res.send([
-        {
-          userId: 1,
-          id: 1,
-          title:
-            "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-          body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
-        },
-        {
-          userId: 2,
-          id: 1,
-          title:
-            "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-          body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
-        },
-      ]);
-    });
-    // GET API Load all products
     app.get("/products", async (req, res) => {
       const cursor = productsCollection.find({});
       const products = await cursor.toArray();
@@ -217,10 +198,29 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  console.log("helmet: ", helmet);
   res.send([
     {
       userId: 1,
+      id: 1,
+      title:
+        "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+      body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
+    },
+  ]);
+});
+
+// GET API Load all products
+app.get("/product", async (req, res) => {
+  res.send([
+    {
+      userId: 1,
+      id: 1,
+      title:
+        "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+      body: "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto",
+    },
+    {
+      userId: 2,
       id: 1,
       title:
         "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
