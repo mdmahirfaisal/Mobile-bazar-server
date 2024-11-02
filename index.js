@@ -10,30 +10,35 @@ require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 // Configure specific directives (for CSP, etc.)
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         scriptSrc: ["'self'", "https://vercel.live"],
-//         scriptSrcElem: ["'self'", "https://vercel.live"],
-//         objectSrc: ["'none'"],
-//         connectSrc: ["'self'", "https://vercel.live"],
-//       },
-//     },
-//   })
-// );
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://vercel.live"],
+        scriptSrcElem: ["'self'", "https://vercel.live"],
+        objectSrc: ["'none'"],
+        connectSrc: [
+          "'self'",
+          "https://vercel.live",
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "https://smart-mobile-bazar.web.app",
+        ], // add client app's origin in development
+      },
+    },
+  })
+);
 
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "script-src-elem 'self' https://vercel.live; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-src https://vercel.live; object-src 'none'"
+    "script-src-elem 'self' https://mobile-bazar.vercel.app https://smart-mobile-bazar.web.app http://localhost:3000; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-src https://mobile-bazar.vercel.app https://smart-mobile-bazar.web.app http://localhost:3000; object-src 'none'"
   );
   next();
 });
 
-
-// middle ware 
+// middle ware Z
 app.use(cors());
 app.use(express.json());
 
