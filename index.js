@@ -10,27 +10,25 @@ require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 // Configure specific directives (for CSP, etc.)
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         scriptSrc: ["'self'", "https://vercel.live"],
-//         scriptSrcElem: ["'self'", "https://vercel.live"],
-//         objectSrc: ["'none'"],
-//         connectSrc: ["'self'", "https://vercel.live"],
-//       },
-//     },
-//   })
-// );
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://vercel.live"],
+        // Add more sources if needed
+      },
+    },
+  })
+);
 
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self'; script-src-elem 'self' https://vercel.live; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-src https://vercel.live; object-src 'none'"
-  );
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader(
+//     "Content-Security-Policy",
+//     "default-src 'self'; script-src-elem 'self' https://vercel.live; img-src 'self' data:; style-src 'self' 'unsafe-inline'; frame-src https://vercel.live; object-src 'none'"
+//   );
+//   next();
+// });
 
 
 // middle ware 
