@@ -6,11 +6,5 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [
-    { "source": "/", "destination": "/api" },
-    { "source": "/products", "destination": "/api/products" },
-    { "source": "/review", "destination": "/api/review" },
-    { "source": "/orders", "destination": "/api/orders" },
-    { "source": "/users", "destination": "/api/users" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
 }
