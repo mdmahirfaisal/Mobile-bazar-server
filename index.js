@@ -1,14 +1,47 @@
 const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const winston = require("winston");
 require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Configure Winston logger
+const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: "error.log", level: "error" }),
+    new winston.transports.File({ filename: "combined.log" }),
+  ],
+});
+
 // Middleware
-app.use(cors());
+app.use(helmet()); // Security headers
+app.use(
+  cors({
+    origin: ["https://your-frontend.vercel.app", "http://localhost:3000"],
+  })
+);
 app.use(express.json());
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per window
+    message: "Too many requests from this IP, please try again later.",
+  })
+);
+app.use((req, res, next) => {
+  logger.info(`Request: ${req.method} ${req.url}`);
+  next();
+});
 
 // MongoDB Connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dt2b3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -19,24 +52,23 @@ const client = new MongoClient(uri, {
 
 let db; // Store MongoDB database instance
 
-// Initialize MongoDB connection
 async function initializeDatabase() {
   try {
     if (!db) {
       await client.connect();
       db = client.db("mobile_bazar");
-      console.log("MongoDB connected successfully");
+      logger.info("MongoDB connected successfully");
     }
     return db;
   } catch (error) {
-    console.error("MongoDB connection error:", error);
+    logger.error("MongoDB connection error:", error);
     throw new Error("Failed to connect to database");
   }
 }
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error(`Error: ${err.message}`, { stack: err.stack });
   res.status(500).json({ error: "Something went wrong!" });
 });
 
@@ -50,12 +82,12 @@ async function run() {
     const usersCollection = database.collection("users");
 
     // Health Check
-    app.get("/api/", (req, res) => {
+    app.get("/", (req, res) => {
       res.json({ message: "Mobile Bazar API is running" });
     });
 
     // GET: Load all orders
-    app.get("/api/orders", async (req, res, next) => {
+    app.get("/orders", async (req, res, next) => {
       try {
         const cursor = ordersCollection.find({});
         const orders = await cursor.toArray();
@@ -66,7 +98,7 @@ async function run() {
     });
 
     // GET: Orders by specific user
-    app.get("/api/ordersData", async (req, res, next) => {
+    app.get("/ordersData", async (req, res, next) => {
       try {
         const email = req.query.email;
         if (!email) throw new Error("Email is required");
@@ -80,11 +112,12 @@ async function run() {
     });
 
     // POST: Create order
-    app.post("/api/orders", async (req, res, next) => {
+    app.post("/orders", async (req, res, next) => {
       try {
         const order = req.body;
         if (!order) throw new Error("Order data is required");
         const result = await ordersCollection.insertOne(order);
+        logger.info(`Order created: ${result.insertedId}`);
         res.json(result);
       } catch (error) {
         next(error);
@@ -92,7 +125,7 @@ async function run() {
     });
 
     // DELETE: Order by ID
-    app.delete("/api/orders/:id", async (req, res, next) => {
+    app.delete("/orders/:id", async (req, res, next) => {
       try {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
@@ -100,6 +133,7 @@ async function run() {
         if (result.deletedCount === 0) {
           throw new Error("Order not found");
         }
+        logger.info(`Order deleted: ${id}`);
         res.json(result);
       } catch (error) {
         next(error);
@@ -107,7 +141,7 @@ async function run() {
     });
 
     // GET: Load all products
-    app.get("/api/products", async (req, res, next) => {
+    app.get("/products", async (req, res, next) => {
       try {
         const cursor = productsCollection.find({});
         const products = await cursor.toArray();
@@ -118,7 +152,7 @@ async function run() {
     });
 
     // GET: Single product by ID
-    app.get("/api/products/:id", async (req, res, next) => {
+    app.get("/products/:id", async (req, res, next) => {
       try {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
@@ -131,7 +165,7 @@ async function run() {
     });
 
     // DELETE: Product by ID
-    app.delete("/api/products/:id", async (req, res, next) => {
+    app.delete("/products/:id", async (req, res, next) => {
       try {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
@@ -139,6 +173,7 @@ async function run() {
         if (result.deletedCount === 0) {
           throw new Error("Product not found");
         }
+        logger.info(`Product deleted: ${id}`);
         res.json(result);
       } catch (error) {
         next(error);
@@ -146,11 +181,12 @@ async function run() {
     });
 
     // POST: Create product
-    app.post("/api/products", async (req, res, next) => {
+    app.post("/products", async (req, res, next) => {
       try {
         const product = req.body;
         if (!product) throw new Error("Product data is required");
         const result = await productsCollection.insertOne(product);
+        logger.info(`Product created: ${result.insertedId}`);
         res.json(result);
       } catch (error) {
         next(error);
@@ -158,7 +194,7 @@ async function run() {
     });
 
     // PUT: Update product
-    app.put("/api/updateProduct", async (req, res, next) => {
+    app.put("/updateProduct", async (req, res, next) => {
       try {
         const { id, name, img, description, price } = req.body;
         if (!id) throw new Error("Product ID is required");
@@ -170,6 +206,7 @@ async function run() {
         if (result.matchedCount === 0) {
           throw new Error("Product not found");
         }
+        logger.info(`Product updated: ${id}`);
         res.json(result);
       } catch (error) {
         next(error);
@@ -177,11 +214,12 @@ async function run() {
     });
 
     // POST: Create review
-    app.post("/api/review", async (req, res, next) => {
+    app.post("/review", async (req, res, next) => {
       try {
         const review = req.body;
         if (!review) throw new Error("Review data is required");
         const result = await reviewCollection.insertOne(review);
+        logger.info(`Review created: ${result.insertedId}`);
         res.json(result);
       } catch (error) {
         next(error);
@@ -189,7 +227,7 @@ async function run() {
     });
 
     // GET: Load all reviews
-    app.get("/api/review", async (req, res, next) => {
+    app.get("/review", async (req, res, next) => {
       try {
         const cursor = reviewCollection.find({});
         const reviews = await cursor.toArray();
@@ -200,7 +238,7 @@ async function run() {
     });
 
     // GET: Check if user is admin
-    app.get("/api/users/:email", async (req, res, next) => {
+    app.get("/users/:email", async (req, res, next) => {
       try {
         const email = req.params.email;
         const query = { email };
@@ -212,11 +250,12 @@ async function run() {
     });
 
     // POST: Create user
-    app.post("/api/users", async (req, res, next) => {
+    app.post("/users", async (req, res, next) => {
       try {
         const user = req.body;
         if (!user.email) throw new Error("User email is required");
         const result = await usersCollection.insertOne(user);
+        logger.info(`User created: ${user.email}`);
         res.json(result);
       } catch (error) {
         next(error);
@@ -224,7 +263,7 @@ async function run() {
     });
 
     // PUT: Upsert user
-    app.put("/api/users", async (req, res, next) => {
+    app.put("/users", async (req, res, next) => {
       try {
         const user = req.body;
         if (!user.email) throw new Error("User email is required");
@@ -236,6 +275,7 @@ async function run() {
           updateDoc,
           options
         );
+        logger.info(`User upserted: ${user.email}`);
         res.json(result);
       } catch (error) {
         next(error);
@@ -243,7 +283,7 @@ async function run() {
     });
 
     // PUT: Make user admin
-    app.put("/api/users/admin", async (req, res, next) => {
+    app.put("/users/admin", async (req, res, next) => {
       try {
         const { email } = req.body;
         if (!email) throw new Error("Email is required");
@@ -253,6 +293,7 @@ async function run() {
         if (result.matchedCount === 0) {
           throw new Error("User not found");
         }
+        logger.info(`User made admin: ${email}`);
         res.json(result);
       } catch (error) {
         next(error);
@@ -260,7 +301,7 @@ async function run() {
     });
 
     // PUT: Update order status
-    app.put("/api/updateOrderStatus", async (req, res, next) => {
+    app.put("/updateOrderStatus", async (req, res, next) => {
       try {
         const { id, status } = req.body;
         if (!id || !status) throw new Error("ID and status are required");
@@ -270,13 +311,14 @@ async function run() {
         if (result.matchedCount === 0) {
           throw new Error("Order not found");
         }
+        logger.info(`Order status updated: ${id}`);
         res.json({ updated: result.matchedCount > 0 });
       } catch (error) {
         next(error);
       }
     });
   } catch (error) {
-    console.error("Error in run():", error);
+    logger.error("Error in run():", error);
     throw error;
   }
 }
@@ -284,7 +326,7 @@ async function run() {
 // Start server for local development
 if (process.env.NODE_ENV !== "production") {
   app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+    logger.info(`Server listening on port ${port}`);
   });
 }
 
@@ -293,6 +335,6 @@ module.exports = app;
 
 // Initialize database and handle cleanup
 run().catch((error) => {
-  console.error("Failed to start server:", error);
+  logger.error("Failed to start server:", error);
   process.exit(1);
 });

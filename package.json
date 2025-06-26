@@ -11,13 +11,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@vercel/node": "^4.0.0",
+    "@vercel/node": "^2.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mongodb": "^6.9.0"
+    "express-rate-limit": "^7.4.1",
+    "helmet": "^8.0.0",
+    "mongodb": "^6.9.0",
+    "winston": "^3.15.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
