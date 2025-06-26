@@ -9,25 +9,25 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Configure Winston logger
+// Configure Winston logger (console-only for Vercel)
 const logger = winston.createLogger({
   level: "info",
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.json()
   ),
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: "error.log", level: "error" }),
-    new winston.transports.File({ filename: "combined.log" }),
-  ],
+  transports: [new winston.transports.Console()],
 });
 
 // Middleware
 app.use(helmet()); // Security headers
 app.use(
   cors({
-    origin: ["https://your-frontend.vercel.app", "http://localhost:3000"],
+    origin: [
+      "https://mobile-bazar.vercel.app",
+      "http://localhost:3000",
+      "http://localhost:3001",
+    ],
   })
 );
 app.use(express.json());
@@ -46,8 +46,11 @@ app.use((req, res, next) => {
 // MongoDB Connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dt2b3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const client = new MongoClient(uri, {
-  serverSelectionTimeoutMS: 5000,
-  connectTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 15000, // Increased to 15 seconds
+  connectTimeoutMS: 30000, // Increased to 30 seconds
+  maxTimeMS: 40000, // Increased to 40 seconds for operations
+  retryWrites: true,
+  retryReads: true,
 });
 
 let db; // Store MongoDB database instance
@@ -62,7 +65,7 @@ async function initializeDatabase() {
     return db;
   } catch (error) {
     logger.error("MongoDB connection error:", error);
-    throw new Error("Failed to connect to database");
+    throw error;
   }
 }
 
