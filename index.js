@@ -46,9 +46,8 @@ app.use((req, res, next) => {
 // MongoDB Connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dt2b3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const client = new MongoClient(uri, {
-  serverSelectionTimeoutMS: 15000, // Increased to 15 seconds
-  connectTimeoutMS: 30000, // Increased to 30 seconds
-  maxTimeMS: 40000, // Increased to 40 seconds for operations
+  serverSelectionTimeoutMS: 15000, // 15 seconds
+  connectTimeoutMS: 30000, // 30 seconds
   retryWrites: true,
   retryReads: true,
 });
