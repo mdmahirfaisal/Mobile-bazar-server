@@ -1,21 +1,23 @@
 {
   "name": "mobile-bazzar-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend for Mobile Bazar",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "start-dev": "nodemon index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vercel/node": "^4.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "mongodb": "^6.14.0",
-    "nodemon": "^3.1.9",
-    "vercel": "^41.3.0"
+    "mongodb": "^6.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }
