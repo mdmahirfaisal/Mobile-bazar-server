@@ -24,9 +24,10 @@ app.use(helmet()); // Security headers
 app.use(
   cors({
     origin: [
-      "https://mobile-bazar.vercel.app",
-      "http://localhost:3000",
-      "http://localhost:3001",
+      // `https://mobile-bazar.vercel.app`,
+      // "http://localhost:3000",
+      // "http://localhost:3001",
+      "*",
     ],
   })
 );
@@ -46,38 +47,15 @@ app.use((req, res, next) => {
 // MongoDB Connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dt2b3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 const client = new MongoClient(uri, {
-  serverSelectionTimeoutMS: 15000, // 15 seconds
-  connectTimeoutMS: 30000, // 30 seconds
-  retryWrites: true,
-  retryReads: true,
-});
-
-let db; // Store MongoDB database instance
-
-async function initializeDatabase() {
-  try {
-    if (!db) {
-      await client.connect();
-      db = client.db("mobile_bazar");
-      logger.info("MongoDB connected successfully");
-    }
-    return db;
-  } catch (error) {
-    logger.error("MongoDB connection error:", error);
-    throw error;
-  }
-}
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  logger.error(`Error: ${err.message}`, { stack: err.stack });
-  res.status(500).json({ error: "Something went wrong!" });
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
 // API Routes
 async function run() {
   try {
-    const database = await initializeDatabase();
+    await client.connect();
+    const database = client.db("mobile_bazar");
     const productsCollection = database.collection("products");
     const ordersCollection = database.collection("orders");
     const reviewCollection = database.collection("review");
@@ -326,17 +304,14 @@ async function run() {
 }
 
 // Start server for local development
-// if (process.env.NODE_ENV !== "production") {
-//   app.listen(port, () => {
-//     logger.info(`Server listening on port ${port}`);
-//   });
-// }
+if (process.env.NODE_ENV !== "production") {
+  app.listen(port, () => {
+    logger.info(`Server listening on port ${port}`);
+  });
+}
 
 // Export for Vercel serverless
 // module.exports = app;
 
 // Initialize database and handle cleanup
-run().catch((error) => {
-  logger.error("Failed to start server:", error);
-  process.exit(1);
-});
+run().catch(console.dir);
