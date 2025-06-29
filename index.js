@@ -19,6 +19,9 @@ const logger = winston.createLogger({
   transports: [new winston.transports.Console()],
 });
 
+// Enable trust proxy for Vercel
+app.set("trust proxy", 1); // Add this to fix express-rate-limit error
+
 // Middleware
 app.use(helmet()); // Security headers
 app.use(
@@ -43,6 +46,9 @@ app.use((req, res, next) => {
   logger.info(`Request: ${req.method} ${req.url}`);
   next();
 });
+
+// Handle favicon.ico requests to prevent 404 errors
+app.get("/favicon.ico", (req, res) => res.status(204).end());
 
 // MongoDB Connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dt2b3.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -303,6 +309,12 @@ async function run() {
   }
 }
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  logger.error(`Error: ${err.message}`);
+  res.status(500).json({ error: err.message || "Internal Server Error" });
+});
+
 // Start server for local development
 if (process.env.NODE_ENV !== "production") {
   app.listen(port, () => {
@@ -311,7 +323,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 // Export for Vercel serverless
-// module.exports = app;
+module.exports = app;
 
 // Initialize database and handle cleanup
 run().catch(console.dir);
