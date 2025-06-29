@@ -326,14 +326,14 @@ async function run() {
 }
 
 // Start server for local development
-if (process.env.NODE_ENV !== "production") {
-  app.listen(port, () => {
-    logger.info(`Server listening on port ${port}`);
-  });
-}
+// if (process.env.NODE_ENV !== "production") {
+//   app.listen(port, () => {
+//     logger.info(`Server listening on port ${port}`);
+//   });
+// }
 
 // Export for Vercel serverless
-module.exports = app;
+// module.exports = app;
 
 // Initialize database and handle cleanup
 run().catch((error) => {
